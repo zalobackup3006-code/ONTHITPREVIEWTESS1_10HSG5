@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Mastery - Primary EdTech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5; --primary-dark: #4338CA;
+            --secondary: #10B981; --secondary-dark: #059669;
+            --danger: #EF4444; --danger-dark: #DC2626;
+            --warning: #F59E0B; --text-main: #1F2937;
+            --bg-gradient: linear-gradient(135deg, #E0E7FF 0%, #DBEAFE 100%);
+            --card-bg: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* UI Components */
+        .screen { display: none; width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; flex-grow: 1; flex-direction: column; justify-content: center; }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 3px solid #E5E7EB; }
+        h1, h2, h3 { font-weight: 800; text-align: center; color: var(--primary-dark); margin-bottom: 20px; }
+        
+        .btn { padding: 12px 24px; border-radius: 16px; border: none; font-size: 18px; font-weight: 800; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--secondary); color: white; }
+        
+        input[type="text"] { font-size: 18px; padding: 10px 15px; border: 3px solid #D1D5DB; border-radius: 12px; outline: none; transition: border-color 0.2s; font-weight: 700; color: var(--primary-dark); text-align: center; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); }
+        
+        /* Login Screen */
+        #login-screen { align-items: center; }
+        .login-box { text-align: center; max-width: 400px; width: 100%; }
+        .login-box input { width: 100%; margin-bottom: 20px; font-size: 20px; }
+        .login-box .btn { width: 100%; font-size: 20px; }
+
+        /* Test List Screen */
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .test-card { background: white; border: 3px solid #E5E7EB; border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s; font-weight: 800; color: var(--text-main); }
+        .test-card:hover { transform: translateY(-5px); border-color: var(--primary); color: var(--primary); }
+        .test-card.completed { border-color: var(--secondary); background: #ECFDF5; }
+
+        /* Quiz Screen */
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .progress-container { flex-grow: 1; margin: 0 20px; }
+        .progress-bar { background: #E5E7EB; height: 12px; border-radius: 6px; overflow: hidden; }
+        .progress-fill { background: var(--secondary); height: 100%; width: 0%; transition: width 0.3s ease; }
+        
+        .nav-select { padding: 8px 12px; border-radius: 10px; border: 2px solid #D1D5DB; font-weight: 700; font-size: 16px; cursor: pointer; outline: none; }
+        
+        .question-area { font-size: 24px; font-weight: 700; line-height: 1.6; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-bottom: 30px; }
+        
+        /* Specific Question Types */
+        .q-type-label { display: inline-block; padding: 5px 12px; background: #FEF3C7; color: #D97706; border-radius: 20px; font-size: 14px; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
+        
+        /* Nổi bật động từ trong ngoặc */
+        .verb-bracket { color: #D97706; font-weight: 900; background: #FEF3C7; padding: 4px 10px; border-radius: 10px; margin: 0 4px; display: inline-block; border: 2px dashed #FCD34D;}
+
+        /* Type 1: Fill */
+        .inline-input { display: inline-block; width: 150px; margin: 0 10px; }
+        
+        /* Type 2: Mistake */
+        .clickable-word { display: inline-block; margin: 0 4px; padding: 2px 6px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .clickable-word:hover { background: #F3F4F6; }
+        .clickable-word.selected { background: #FEE2E2; border-color: var(--danger); color: var(--danger-dark); }
+        .mistake-input-area { margin-top: 20px; display: none; flex-direction: column; align-items: center; background: #FFF7ED; padding: 15px; border-radius: 12px; border: 2px dashed #FDBA74; width: 100%; }
+        
+        /* Type 3: Rewrite */
+        .rewrite-prompt { font-size: 20px; color: #4B5563; margin-bottom: 15px; background: #F3F4F6; padding: 15px; border-radius: 12px; width: 100%; border-left: 5px solid var(--primary); }
+        .rewrite-answer { display: flex; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap; justify-content: center;}
+        .rewrite-prefix { font-weight: 800; color: var(--primary-dark); }
+        .rewrite-answer input { flex-grow: 1; min-width: 250px; text-align: left; }
+
+        /* Feedback Popup */
+        .feedback-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .feedback-box { background: white; padding: 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .feedback-overlay.active { display: flex; }
+        .feedback-overlay.active .feedback-box { transform: scale(1); }
+        .feedback-icon { font-size: 60px; margin-bottom: 15px; }
+        .feedback-correct .feedback-icon { color: var(--secondary); }
+        .feedback-correct h3 { color: var(--secondary-dark); }
+        .feedback-wrong .feedback-icon { color: var(--danger); }
+        .feedback-wrong h3 { color: var(--danger-dark); }
+        .explanation { font-size: 16px; color: #4B5563; margin-bottom: 20px; background: #F3F4F6; padding: 10px; border-radius: 10px; font-weight: 600; }
+
+        /* Action Buttons Area */
+        .action-area { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        
+        /* Report Screen */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: #F9FAFB; padding: 20px; border-radius: 16px; text-align: center; border: 2px solid #E5E7EB; }
+        .stat-card h4 { color: #6B7280; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-card .num { font-size: 32px; font-weight: 900; color: var(--primary); }
+        .report-table-wrapper { overflow-x: auto; max-height: 400px; overflow-y: auto; border: 2px solid #E5E7EB; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #E5E7EB; font-size: 15px; }
+        th { background: #F3F4F6; position: sticky; top: 0; font-weight: 800; color: #374151; }
+        tr:hover { background: #F9FAFB; }
+        .td-wrong { color: var(--danger); font-weight: 700; }
+        .td-correct { color: var(--secondary); font-weight: 700; }
+
+        @media (max-width: 600px) {
+            .header-nav { flex-direction: column; gap: 10px; }
+            .progress-container { width: 100%; margin: 10px 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .rewrite-answer { flex-direction: column; align-items: stretch; }
+            .rewrite-prefix { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="login-screen" class="screen active">
+        <div class="card login-box">
+            <h1>🚀 English Mastery</h1>
+            <p style="margin-bottom: 20px; font-weight: 600; color: #4B5563;">Nhập tên của em để bắt đầu hành trình nhé!</p>
+            <input type="text" id="student-name" placeholder="Ví dụ: Nguyễn Văn A" onkeypress="handleLoginEnter(event)">
+            <button class="btn btn-primary" onclick="startApp()">Bắt đầu ngay!</button>
+        </div>
+    </div>
+
+    <!-- 2. TEST LIST SCREEN -->
+    <div id="test-list-screen" class="screen">
+        <div class="card" style="text-align: center;">
+            <h2>👋 Xin chào, <span id="display-name" style="color: var(--primary);"></span>!</h2>
+            <p style="font-weight: 600; margin-bottom: 20px;">Chọn một bài kiểm tra để luyện tập. Mỗi bài có 20 câu hỏi.</p>
+            <div id="test-grid" class="test-grid"></div>
+            <button class="btn btn-success" style="margin-top: 30px;" onclick="showGlobalReport()">Báo Cáo Tổng Hợp</button>
+        </div>
+    </div>
+
+    <!-- 3. QUIZ SCREEN -->
+    <div id="quiz-screen" class="screen">
+        <div class="header-nav">
+            <button class="btn" style="padding: 8px 15px; font-size: 14px; background: #E5E7EB; color: #374151;" onclick="goToList()">⬅ Quay lại</button>
+            <div class="progress-container">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; margin-bottom: 5px;">
+                    <span id="test-title">Test 1</span>
+                    <span id="progress-text">0/20 Đã xong</span>
+                </div>
+                <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+            </div>
+            <select id="question-nav" class="nav-select" onchange="jumpToQuestion()"></select>
+        </div>
+
+        <div class="card">
+            <div id="q-type-label" class="q-type-label">Dạng bài</div>
+            <div id="question-render-area" class="question-area"></div>
+            
+            <div class="action-area">
+                <button id="btn-submit" class="btn btn-primary" onclick="checkAnswer()">Kiểm tra đáp án</button>
+                <button id="btn-next" class="btn btn-success" style="display: none;" onclick="nextQuestion()">Câu tiếp theo ➡</button>
+                <button id="btn-finish" class="btn btn-warning" style="display: none; color: white;" onclick="finishTest()">Xem Báo Cáo Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. REPORT SCREEN -->
+    <div id="report-screen" class="screen">
+        <div class="card">
+            <h2 id="report-title">Báo Cáo Kết Quả</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Làm đúng ngay lần 1</h4><div class="num" id="stat-perfect" style="color: var(--secondary)">0</div></div>
+                <div class="stat-card"><h4>Cần làm lại</h4><div class="num" id="stat-redo" style="color: var(--warning)">0</div></div>
+            </div>
+            <h3 style="font-size: 18px; text-align: left; margin-bottom: 10px;">Chi tiết các câu sai:</h3>
+            <div class="report-table-wrapper">
+                <table id="report-table">
+                    <thead><tr><th>ID</th><th>Lỗi sai cuối</th><th>Đáp án đúng</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-primary" onclick="goToList()">Về Danh Sách Bài</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEEDBACK POPUP -->
+    <div id="feedback-overlay" class="feedback-overlay">
+        <div id="feedback-box" class="feedback-box">
+            <div class="feedback-icon" id="fb-icon"></div>
+            <h3 id="fb-title"></h3>
+            <p id="fb-message" style="font-weight: 700; margin-bottom: 10px;"></p>
+            <div class="explanation" id="fb-explanation"></div>
+            <button id="fb-btn" class="btn"></button>
+        </div>
+    </div>
+
+<script>
+    // --- 1. DATA COMPRESSION & PARSING LOGIC ---
+    
+    // Type 1: [Sentence(blank denoted by [*]), Answer(s) separated by |, Explanation]
+    const rawT1 = [
+        "She (like) [*] studying P.E at school.|likes|'She' là ngôi thứ 3 số ít, động từ thêm 's'",
+        "We like (sing) [*] at the party.|singing|to sing|Sau 'like' dùng V-ing hoặc to V",
+        "Would you like (fly) [*] a kite with me today?|to fly|Cấu trúc 'Would like + to V'",
+        "(be) [*] there any apples on the plate?|Are|'apples' là danh từ số nhiều -> dùng Are",
+        "How often does she (wash) [*] her face?|wash|Câu hỏi có trợ động từ 'does', động từ chính giữ nguyên",
+        "I will (buy) [*] a branch of peach blossoms for Tet.|buy|Sau 'will' cộng động từ nguyên thể",
+        "The children often (ride) [*] their bikes in the afternoon.|ride|'The children' số nhiều, 'often' -> Hiện tại đơn V giữ nguyên",
+        "Her mother always (cook) [*] dinner after work.|cooks|'Her mother' số ít, 'always' -> HTĐ thêm 's'",
+        "My brother sometimes (talk) [*] with friends online in the evening.|talks|'My brother' số ít -> talks",
+        "Lily (like - listen) [*] to music after dinner.|likes listening|likes to listen|'Lily' số ít -> likes + V-ing/to V",
+        "Tam and her friend always (go) [*] to school early.|go|Chủ ngữ số nhiều (Tam and her friend) -> go",
+        "My brother can (play) [*] the piano but he can't (play) [*] the guitar.|play|Sau động từ khuyết thiếu 'can/can't' dùng V nguyên thể",
+        "He often (go) [*] to school on foot.|goes|'He' số ít, tận cùng 'o' thêm 'es'",
+        "It (rain) [*] very hard now.|is raining|'now' dấu hiệu thì Hiện tại tiếp diễn (be + V-ing)",
+        "Look! A man (run) [*] after the train.|is running|'Look!' dấu hiệu HTTD -> is running (gấp đôi phụ âm 'n')",
+        "She (go) [*] to school everyday.|goes|'everyday' -> HTĐ, 'She' -> goes",
+        "He (meet) [*] the dentist next week.|will meet|is meeting|is going to meet|'next week' -> Tương lai",
+        "My sister (go) [*] bowling yesterday.|went|'yesterday' -> Quá khứ đơn (go -> went)",
+        "Nam (have) [*] a sleepover at his friend's house last night.|had|'last night' -> Quá khứ đơn (have -> had)",
+        "He (not do) [*] his homework yesterday.|didn't do|did not do|'yesterday' dạng phủ định -> didn't + V nguyên thể",
+        "They (go) [*] to Brazil last month.|went|'last month' -> Quá khứ đơn",
+        "Could you (blow) [*] up the balloons?|blow|Sau 'Could' dùng V nguyên thể",
+        "She (have) [*] a sleepover last week.|had|'last week' -> Quá khứ đơn",
+        "I (stay) [*] at home yesterday.|stayed|'yesterday' -> stayed (thêm ed)",
+        "My favourite holiday (be) [*] Christmas.|is|Sự thật/sở thích -> HTĐ",
+        "He didn't (sing) [*] karaoke last night.|sing|Sau trợ động từ 'didn't' động từ giữ nguyên",
+        "He (paint) [*] picture at the moment.|is painting|'at the moment' -> HTTD",
+        "They (have) [*] a sport festival next Sunday.|will have|are going to have|'next Sunday' -> Tương lai",
+        "What do you (do) [*] in your free time?|do|Câu hỏi HTĐ -> trợ ĐT 'do' + V nguyên thể",
+        "Don't go outside because it (rain) [*] now.|is raining|'now' -> HTTD",
+        "It often rains in the summer. It (rain) [*] now.|is raining|'now' -> HTTD",
+        "Mother (cook) [*] some food in the kitchen at the moment...|is cooking|'at the moment' -> HTTD",
+        "I always (meet) [*] him on the corner of this street.|meet|'always', chủ ngữ 'I' -> HTĐ giữ nguyên",
+        "What did you (do) [*] yesterday morning?|do|Câu hỏi QKĐ dùng trợ động từ 'did' -> V nguyên thể",
+        "We would like (visit) [*] Ngoc Son Temple.|to visit|Would like + to V",
+        "My father (buy) [*] a new car 2 months ago.|bought|'2 months ago' -> QKĐ (buy -> bought)",
+        "Mr Robinson (watch) [*] T.V every night.|watches|'every night', chủ ngữ số ít -> HTĐ thêm es",
+        "She (come) [*] here next month.|will come|is going to come|'next month' -> Tương lai",
+        "Teenagers like (listen) [*] to the latest pop music.|listening|to listen|like + V-ing/to V",
+        "Where are they now? They (read) [*] book in the room.|are reading|Đang xảy ra -> HTTD",
+        "They (be) [*] at the seaside last week.|were|'last week', Tobe QKĐ đi với 'They' là 'were'",
+        "My sister enjoys (read) [*] short stories.|reading|enjoy + V-ing",
+        "Don't (play) [*] over there.|play|Câu mệnh lệnh phủ định: Don't + V nguyên thể",
+        "You may (fall) [*] off your motorbike.|fall|Sau 'may' dùng V nguyên thể",
+        "I (have) [*] a sleepover at my friend's house last night.|had|'last night' -> QKĐ",
+        "Vinh (listen) [*] to music every night.|listens|'every night', số ít -> listens",
+        "Last summer, they (go) [*] to NhaTrang.|went|'Last summer' -> QKĐ",
+        "My brother thinks it (snow) [*] tomorrow.|will snow|is going to snow|'tomorrow' -> Tương lai",
+        "I (not stay) [*] home at the moment.|am not staying|'m not staying|'at the moment', phủ định -> am not V-ing",
+        "He enjoys (play) [*] tennis.|playing|enjoy + V-ing",
+        "He (go) [*] to the zoo on the weekend.|goes|Lịch trình/Thói quen -> HTĐ",
+        "They (be) [*] at home yesterday.|were|'yesterday' Tobe của 'They' là 'were'",
+        "She (do) [*] her homework yesterday evening.|did|'yesterday evening' -> QKĐ của do là did",
+        "Mai (read) [*] the story of Mai An Tiem.|reads|is reading|Có thể HTĐ hoặc HTTD tuỳ ngữ cảnh, chấp nhận cả hai",
+        "He (see) [*] many tigers yesterday morning.|saw|'yesterday morning' -> QKĐ của see là saw",
+        "My mother (go) [*] to Phu Quoc Island last weekend.|went|'last weekend' -> QKĐ",
+        "We often (go) [*] to school by bike.|go|'often', chủ ngữ We -> go",
+        "We (be) [*] doctors.|are|Sự thật HTĐ -> are",
+        "She likes (read) [*] books in her free time.|reading|to read|like + V-ing/to V",
+        "My sister will (visit) [*] Ha Long next month.|visit|Sau 'will' dùng V nguyên thể",
+        "She (be) [*] at the water park last Sunday.|was|'last Sunday' Tobe đi với She là 'was'",
+        "What do people (do) [*] to celebrate New year?|do|Sau trợ ĐT 'do' là V nguyên thể",
+        "She (watch) [*] a lion dance on Lunar New Year.|watches|Thói quen dịp lễ, chủ ngữ She -> watches",
+        "They (be) [*] at the supermarket last night.|were|'last night', Tobe của They là were",
+        "We usually (watch) [*] fireworks on new year's eve.|watch|'usually', chủ ngữ We -> watch",
+        "She (have) [*] break fast with eggs and bread.|has|HTĐ, She -> has",
+        "I'm going to (stay) [*] at home tonight.|stay|Cấu trúc be going to + V nguyên thể",
+        "There (be) [*] a thunderstorm tomorrow.|will be|is going to be|'tomorrow' -> Tương lai",
+        "He (sing) [*] karaoke last night.|sang|'last night' -> QKĐ của sing là sang",
+        "I hope the weather (be) [*] windy to fly a kite.|will be|is|Sau 'hope' thường dùng TLĐ hoặc HTĐ",
+        "It's humid today, then I (visit) [*] the water park.|will visit|am going to visit|Tương lai",
+        "Can you (help) [*] me put away groceries?|help|Sau 'Can' dùng V nguyên thể",
+        "Nam (go) [*] to school from Mondays to Fridays.|goes|Thói quen -> HTĐ",
+        "My mother (be) [*] a doctor.|is|Sự thật HTĐ -> is",
+        "They (be) [*] on the beach last Sunday.|were|'last Sunday' -> were",
+        "My parents (cook) [*] in the kitchen now.|are cooking|'now' -> HTTD",
+        "I (visit) [*] my grandparents yesterday.|visited|'yesterday' -> visited",
+        "Let's go to the bookshop! - OK. I (want) [*] to buy some books.|want|HTĐ chỉ mong muốn -> want",
+        "What does your sister (look) [*] like? - She is tall and slim.|look|Cấu trúc What does sb look like?",
+        "She loves talking with people and (have) [*] many friends.|having|Cấu trúc song song sau 'and', loves V-ing and V-ing",
+        "What did Peter (do) [*] last weekend? - He played football.|do|Trợ ĐT 'did' -> V nguyên thể",
+        "Would you (like) [*] some noodles? - Yes, please.|like|Cấu trúc Would you like"
+    ];
+
+    // Type 2: [Sentence | WrongWord | CorrectWord(s) | Explanation]
+    const rawT2 = [
+        "Phong usually watch games on T.V.|watch|watches|'Phong' là số ít, 'usually' chỉ HTĐ nên phải thêm 'es'.",
+        "What the weather like in autumn?|What|What's|What is|Thiếu động từ to be 'is' (What's).",
+        "We would like having a picnic when it's cloudy.|having|to have|Cấu trúc 'would like + to V'.",
+        "Mr Brown always goes to work in car.|in|by|Đi bằng phương tiện giao thông dùng 'by' (by car).",
+        "There are a dog under the table.|are|is|'a dog' là số ít nên dùng 'There is'.",
+        "He favourite subject is ethics.|He|His|Sở hữu cách của 'He' là 'His'.",
+        "He works in the factory. He is a farmer.|farmer|worker|Làm trong nhà máy (factory) thì phải là công nhân (worker).",
+        "We usually listen music in the morning.|listen|listen to|Cụm từ cố định 'listen to music'.",
+        "There is some books on the table.|is|are|'some books' là số nhiều nên dùng 'There are'.",
+        "What is the weather like yesterday?|is|was|'yesterday' chỉ quá khứ nên to be là 'was'.",
+        "We wraps presents for his birthday.|wraps|wrap|'We' là số nhiều, HTĐ động từ không chia (wrap).",
+        "Tet holiday is so excited.|excited|exciting|Chỉ tính chất của sự vật (Tet) dùng đuôi -ing (exciting).",
+        "What do he do to celebrate Christmas?|do|does|Chủ ngữ 'he' mượn trợ động từ 'does'.",
+        "Tom watch the lion dance on New Year.|watch|watches|'Tom' số ít -> watches.",
+        "Does he plays football?|plays|play|Đã có trợ động từ 'Does' thì động từ chính giữ nguyên.",
+        "What's the matter to you?|to|with|Cấu trúc đúng là 'What's the matter with you?'.",
+        "Last weekend, I am at my friend's birthday party?|am|was|'Last weekend' là quá khứ -> was.",
+        "She watchs T.V every day.|watchs|watches|Quy tắc thêm es: tận cùng 'ch' thêm 'es' (watches).",
+        "Sue is going to going shopping tonight.|going|go|Cấu trúc 'is going to + V nguyên thể'.",
+        "Nam and Tam are going to fly kites afternoon tomorrow.|afternoon tomorrow|tomorrow afternoon|Trật tự từ đúng: tomorrow afternoon.",
+        "I don't like cook. I don't want to be a chef.|cook|cooking|to cook|Sau 'like' dùng V-ing hoặc to V.",
+        "My parents is going to plant some flowers.|is|are|'parents' (số nhiều) -> are going to.",
+        "I'd love being a dentist in the future.|being|to be|'would love + to V' (I'd = I would).",
+        "I hope the weather are clear.|are|is|will be|'weather' không đếm được, dùng to be số ít.",
+        "He didn't went to the beach.|went|go|Đã mượn 'didn't' thì V trở về nguyên thể (go).",
+        "Tam goes to the river last Wednesday.|goes|went|'last Wednesday' chỉ quá khứ -> went.",
+        "She didn't had a barbecue with her friends last night.|had|have|Sau 'didn't' dùng V nguyên thể (have).",
+        "Nam can plays soccer very well.|plays|play|Sau 'can' dùng V nguyên thể.",
+        "Nam went to his hometown with coach.|with|by|Đi bằng phương tiện dùng giới từ 'by'.",
+        "Will you be in English on your summer holiday?|in|in England|'in' đi với địa điểm (vd: in England).",
+        "Did he invited you to his birthday party?|invited|invite|Đã mượn 'Did' V về nguyên thể.",
+        "They will build sandcastles of the beach.|of|on|Trên bãi biển dùng giới từ 'on'.",
+        "How did you get there? - I went on underground.|on|by|Bằng tàu điện ngầm dùng 'by underground'.",
+        "We took a lot of photo at the party.|photo|photos|'a lot of' + danh từ số nhiều (photos).",
+        "She often go swimming with her friends at the weekend.|go|goes|'She' số ít -> goes.",
+        "I always has big breakfast before I go to school.|has|have|'I' đi với 'have'.",
+        "She lives in her grandparents in a small village.|in|with|Sống 'với' ai đó dùng 'with'.",
+        "Where did you went on holiday?|went|go|Sau 'did' V nguyên thể.",
+        "How did you get at Hoa Binh Province?|at|to|Tới một nơi dùng 'get to'.",
+        "They will build sandcastles in the beach.|in|on|Trên bãi biển dùng 'on the beach'.",
+        "Where will you go yesterday?|will|did|'yesterday' (quá khứ) phải dùng 'did'.",
+        "We saw a lot of animals to the zoo.|to|at|in|Ở sở thú dùng 'at the zoo' hoặc 'in the zoo'.",
+        "What animals did you saw.|saw|see|Sau 'did' V nguyên thể.",
+        "There is elephants, bears, pandas in the zoo.|is|are|Liệt kê nhiều con vật (số nhiều) -> There are.",
+        "I want to went to the movie theater today.|went|go|Sau 'want to' + V nguyên thể.",
+        "How do I gets to the library?|gets|get|Sau 'do I' V nguyên thể.",
+        "I were at the skate park last weekend.|were|was|'I' đi với 'was'.",
+        "Where was you last night?|was|were|'you' đi với 'were'.",
+        "What's you favourite holiday?|you|your|Tính từ sở hữu 'của bạn' là 'your'.",
+        "They has the flu. They can't go to school.|has|have|'They' đi với 'have'.",
+        "He didn't went to Cambodia with his family last year.|went|go|Sau 'didn't' V nguyên thể.",
+        "Lan has a earache. She can't listen to music.|a|an|'earache' bắt đầu bằng nguyên âm -> an earache.",
+        "Tom would like to be an dentist.|an|a|'dentist' bắt đầu bằng phụ âm -> a dentist.",
+        "She usually eats meat and soup in dinner.|in|for|Ăn cho bữa nào dùng 'for' (for dinner).",
+        "I want to surfed the internet today.|surfed|surf|want to + V nguyên thể.",
+        "They plant trees in the garden last weekend.|plant|planted|'last weekend' -> quá khứ (planted).",
+        "Where are the pencil sharpener?|are|is|'pencil sharpener' số ít -> is."
+    ];
+
+    // Type 3: [Prompt | Prefix | Answer(s) (will be lowercased and stripped of punctuation for checking) | Explanation]
+    const rawT3 = [
+        "Phong's school has forty classrooms.|There|are forty classrooms in phong's school|are 40 classrooms in phong's school|Cấu trúc: S + have/has + N = There is/are + N + in + N(chỉ nơi chốn).",
+        "Phuong has a brother, Nam.|Phuong is|nam's sister|nams sister|Sở hữu cách.",
+        "The bakery is in front of the bookstore.|The bookstore|is behind the bakery|'in front of' (trước) trái nghĩa với 'behind' (sau).",
+        "This house is small.|It is|a small house|Tính từ đứng trước danh từ.",
+        "The movie theatre is to the right of the toystore.|The toystore|is to the left of the movie theatre|Bên phải trái nghĩa với bên trái (to the left of).",
+        "Nam's eyes are small.|Nam has|small eyes|Chuyển từ N + be + adj sang S + have/has + adj + N.",
+        "I usually go to school on foot.|I usually|walk to school|'go on foot' (đi bộ) = walk.",
+        "Phong has a sister, Lan.|Lan is|phong's sister|phongs sister|Sở hữu cách.",
+        "The stadium is behind the park.|The park|is in front of the stadium|'behind' trái nghĩa 'in front of'.",
+        "This bag is big.|It is|a big bag|Cấu trúc Adj + N.",
+        "Why don't we play badminton after finishing our exam?|What|about playing badminton after finishing our exam|Cấu trúc gợi ý: Why don't we + V = What about + V-ing.",
+        "The bakery is to the left of my house.|My house is|to the right of the bakery|Trái ngược vị trí.",
+        "Tom studies carefully.|Tom is|a careful student|Chuyển từ V + Adv sang be + Adj + N(chỉ người).",
+        "Your schoolbag is more expensive than mine.|My schoolbag|is cheaper than yours|is cheaper than your schoolbag|is less expensive than yours|Đắt hơn -> Rẻ hơn (So sánh hơn).",
+        "Mr.Minh has a son, Trung.|Mr. Minh is|trung's father|trungs father|Sở hữu cách.",
+        "This ruler is longer than that one.|That ruler|is shorter than this one|is shorter than this ruler|Dài hơn -> Ngắn hơn.",
+        "What about playing chess?|Let's|play chess|Gợi ý: What about + V-ing = Let's + V nguyên thể.",
+        "He often cycles to work.|He often|goes to work by bike|rides a bike to work|cycle = go by bike/ride a bike.",
+        "My father likes coffee best.|My father's favourite|drink is coffee|Sở thích nhất = favourite.",
+        "My little sister wants to be a doctor when she grows up.|My little sister would|like to be a doctor when she grows up|want to = would like to.",
+        "My house has six rooms.|There are|six rooms in my house|6 rooms in my house|Cấu trúc S + has = There are.",
+        "What is the width of this road?|How|wide is this road|Hỏi chiều rộng: What is the width of = How wide is.",
+        "The Mekong River is longer than the Red River.|The Red River|is shorter than the mekong river|is not as long as the mekong river|Dài hơn -> Ngắn hơn.",
+        "How many oranges do you want?|How many oranges would|you like|want = would like.",
+        "There are twelve packets of tea in this box.|This box has|twelve packets of tea|12 packets of tea|There are -> has.",
+        "My school has over 400 students.|There|are over 400 students in my school|are over four hundred students in my school|S + has = There are.",
+        "He has a pain in his tooth.|He has a|toothache|pain in tooth = toothache (đau răng).",
+        "What's the matter with your mother?|What's|wrong with your mother|the problem with your mother|matter with = wrong with = the problem with.",
+        "They took a bus to the city centre.|They went to|the city centre by bus|took a bus = went by bus.",
+        "My brother often goes to school on foot.|My brother often|walks to school|goes on foot = walks.",
+        "Don't ride your bike too fast.|You shouldn't|ride your bike too fast|Khuyên bảo: Don't = shouldn't.",
+        "There are five people in my family.|My family|has five people|has 5 people|There are -> has.",
+        "Let's go for a picnic.|How about|going for a picnic|Let's V = How about V-ing.",
+        "The stadium is to the left of the park.|The park|is to the right of the stadium|Trái -> Phải.",
+        "How much does a packet of biscuits cost?|What is|the price of a packet of biscuits|How much does it cost = What is the price of.",
+        "Lan is taller than Tam.|Tam is|shorter than lan|not as tall as lan|Cao hơn -> Thấp hơn.",
+        "My house is to the left of the museum and to the right of the toystore.|My house is|between the toystore and the museum|between the museum and the toystore|Nằm giữa 2 vật.",
+        "Last year he went to school on foot.|Last year he|walked to school|went on foot = walked.",
+        "Mrs Green has a son, Tom.|Tom is|mrs green's son|mrs greens son|Sở hữu cách.",
+        "My sister gets up at five fifteen everyday.|My sister gets up at a|quarter past five everyday|quarter past five every day|5:15 = a quarter past five.",
+        "No one in my class is taller than Linh.|Linh is|the tallest in my class|the tallest student in my class|So sánh hơn với No one = So sánh nhất.",
+        "Mai is not as tall as Lan.|Lan is|taller than mai|Không cao bằng -> Cao hơn.",
+        "Does your house have a yard?|Is there|a yard in your house|Do/Does + S + have = Is/Are there.",
+        "What's the matter with him?|What's|wrong with him|the problem with him|matter = wrong.",
+        "You had better not eat alot of sweets.|You should|not eat a lot of sweets|not eat alot of sweets|had better not = should not.",
+        "She has a toothache, so she went to the dentist.|She went|to the dentist because she had a toothache|to the dentist because she has a toothache|so (vì vậy) -> because (bởi vì).",
+        "Why don't we go and see her after school?|Let's|go and see her after school|Why don't we = Let's.",
+        "There are four people in my family.|My family|has four people|has 4 people|There are = has.",
+        "My mother often drives to work.|My mother goes|to work by car|drives = goes by car.",
+        "Mr And Mrs Kien have a daughter Lan.|Mr And Mrs Kien are|lan's parents|lans parents|Sở hữu cách.",
+        "He gets up at six - thirty.|He|gets up at half past six|gets up at 6:30|6:30 = half past six.",
+        "How much is that pen?|How much does|that pen cost|How much is = How much does it cost.",
+        "There are 40 monkeys in the cage.|The cage|has 40 monkeys|has forty monkeys|There are = has.",
+        "It is one fifty.|It is ten|to two|1:50 = 2 giờ kém 10 (ten to two).",
+        "The black car is cheaper than the red car.|The red car|is more expensive than the black car|Rẻ hơn -> Đắt hơn.",
+        "Does your school have twenty-five students?|Are there|twenty-five students in your school|25 students in your school|Does S have = Are there.",
+        "His teeth are small and white.|He has|small white teeth|S be Adj = S have Adj N.",
+        "I brush my teeth after breakfast, lunch and dinner.|I|brush my teeth three times a day|brush my teeth 3 times a day|3 bữa = 3 lần 1 ngày.",
+        "What is your age?|How|old are you|Hỏi tuổi."
+    ];
+
+    let allQuestions = [];
+    let idCounter = 1;
+
+    // Parse Type 1
+    rawT1.forEach(item => {
+        let parts = item.split('|');
+        let qText = parts[0];
+        let answers = parts.slice(1, parts.length - 1).map(s => s.trim().toLowerCase());
+        let expl = parts[parts.length - 1];
+        allQuestions.push({ id: idCounter++, type: 'type1', text: qText, ans: answers, expl: expl });
+    });
+
+    // Parse Type 2
+    rawT2.forEach(item => {
+        let parts = item.split('|');
+        allQuestions.push({ id: idCounter++, type: 'type2', text: parts[0], wrongWord: parts[1], ans: parts.slice(2, parts.length - 1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
+    });
+
+    // Parse Type 3
+    rawT3.forEach(item => {
+        let parts = item.split('|');
+        allQuestions.push({ id: idCounter++, type: 'type3', prompt: parts[0], prefix: parts[1], ans: parts.slice(2, parts.length - 1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
+    });
+
+    // --- 2. GLOBAL STATE ---
+    const QUESTIONS_PER_TEST = 20;
+    let studentName = "";
+    let currentTestIndex = 0; 
+    let currentQIndex = 0; 
+    let currentTestQuestions = [];
+    let globalProgress = {}; 
+
+    // --- 3. SYSTEM LOGIC & NAVIGATION ---
+
+    function handleLoginEnter(e) { if(e.key === 'Enter') startApp(); }
+
+    function startApp() {
+        const input = document.getElementById('student-name').value.trim();
+        if(!input) { alert('Vui lòng nhập tên của em nhé!'); return; }
+        studentName = input;
+        document.getElementById('display-name').innerText = studentName;
+        
+        allQuestions.forEach(q => { globalProgress[q.id] = { attempts: 0, solved: false, lastWrongAnswer: "" }; });
+        
+        switchScreen('test-list-screen');
+        renderTestGrid();
+    }
+
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function renderTestGrid() {
+        const grid = document.getElementById('test-grid');
+        grid.innerHTML = '';
+        const totalTests = Math.ceil(allQuestions.length / QUESTIONS_PER_TEST);
+        
+        for(let i=0; i<totalTests; i++) {
+            let startIdx = i * QUESTIONS_PER_TEST;
+            let endIdx = Math.min(startIdx + QUESTIONS_PER_TEST, allQuestions.length);
+            let testQs = allQuestions.slice(startIdx, endIdx);
+            
+            let solvedCount = testQs.filter(q => globalProgress[q.id].solved).length;
+            let isCompleted = solvedCount === testQs.length;
+            
+            let div = document.createElement('div');
+            div.className = `test-card ${isCompleted ? 'completed' : ''}`;
+            div.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 5px;">Test ${i+1}</div>
+                <div style="font-size: 14px; font-weight: 600;">${solvedCount} / ${testQs.length} câu</div>
+                ${isCompleted ? '<div>✅ Hoàn thành</div>' : ''}
+            `;
+            div.onclick = () => loadTest(i);
+            grid.appendChild(div);
+        }
+    }
+
+    function loadTest(index) {
+        currentTestIndex = index;
+        let startIdx = index * QUESTIONS_PER_TEST;
+        let endIdx = Math.min(startIdx + QUESTIONS_PER_TEST, allQuestions.length);
+        currentTestQuestions = allQuestions.slice(startIdx, endIdx);
+        
+        let firstUnsolved = currentTestQuestions.findIndex(q => !globalProgress[q.id].solved);
+        currentQIndex = firstUnsolved !== -1 ? firstUnsolved : 0;
+        
+        document.getElementById('test-title').innerText = `Test ${index + 1}`;
+        populateQuestionDropdown();
+        switchScreen('quiz-screen');
+        renderCurrentQuestion();
+    }
+
+    function populateQuestionDropdown() {
+        const select = document.getElementById('question-nav');
+        select.innerHTML = '';
+        currentTestQuestions.forEach((q, idx) => {
+            let isSolved = globalProgress[q.id].solved;
+            let opt = document.createElement('option');
+            opt.value = idx;
+            opt.text = `Câu ${idx + 1} ${isSolved ? '✅' : ''}`;
+            select.appendChild(opt);
+        });
+        select.value = currentQIndex;
+    }
+
+    function updateProgressUI() {
+        let solvedCount = currentTestQuestions.filter(q => globalProgress[q.id].solved).length;
+        document.getElementById('progress-text').innerText = `${solvedCount}/${currentTestQuestions.length} Đã xong`;
+        document.getElementById('progress-fill').style.width = `${(solvedCount / currentTestQuestions.length) * 100}%`;
+        
+        populateQuestionDropdown();
+        document.getElementById('question-nav').value = currentQIndex;
+
+        const q = currentTestQuestions[currentQIndex];
+        const isSolved = globalProgress[q.id].solved;
+        
+        document.getElementById('btn-submit').style.display = isSolved ? 'none' : 'block';
+        
+        if (solvedCount === currentTestQuestions.length) {
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-finish').style.display = 'block';
+        } else {
+            document.getElementById('btn-finish').style.display = 'none';
+            document.getElementById('btn-next').style.display = isSolved ? 'block' : 'none';
+        }
+    }
+
+    function jumpToQuestion() {
+        currentQIndex = parseInt(document.getElementById('question-nav').value);
+        renderCurrentQuestion();
+    }
+
+    function goToList() {
+        renderTestGrid();
+        switchScreen('test-list-screen');
+    }
+
+    // --- 4. RENDER & LOGIC FOR QUESTION TYPES ---
+    let selectedMistakeWord = null;
+
+    function renderCurrentQuestion() {
+        const q = currentTestQuestions[currentQIndex];
+        const area = document.getElementById('question-render-area');
+        const label = document.getElementById('q-type-label');
+        area.innerHTML = '';
+        selectedMistakeWord = null;
+
+        if (q.type === 'type1') {
+            label.innerText = "Chia động từ trong ngoặc";
+            label.style.background = "#DBEAFE"; label.style.color = "#1D4ED8";
+            
+            // Xử lý làm nổi bật động từ trong ngoặc (verb)
+            // Thay thế (từ_bất_kỳ) thành <span class="verb-bracket">(từ_bất_kỳ)</span>
+            let highlightedText = q.text.replace(/\(([^)]+)\)/g, '<span class="verb-bracket">($1)</span>');
+            
+            let html = highlightedText.replace('[*]', `<input type="text" id="ans-input" class="inline-input" autocomplete="off" ${globalProgress[q.id].solved ? 'disabled value="'+q.ans[0]+'"' : ''}>`);
+            
+            area.innerHTML = html;
+            if(!globalProgress[q.id].solved) setTimeout(() => document.getElementById('ans-input').focus(), 100);
+
+        } else if (q.type === 'type2') {
+            label.innerText = "Tìm lỗi sai và sửa lại";
+            label.style.background = "#FEE2E2"; label.style.color = "#B91C1C";
+            
+            let words = q.text.split(' ');
+            let sentenceHtml = words.map((w, idx) => {
+                let cleanW = w.replace(/[.,?]/g, ''); 
+                let isSolved = globalProgress[q.id].solved;
+                let isTarget = isSolved && cleanW === q.wrongWord; 
+                let classes = `clickable-word ${isTarget ? 'selected' : ''}`;
+                return `<span class="${classes}" onclick="selectMistake(this, '${cleanW}')" data-word="${cleanW}">${w}</span>`;
+            }).join('');
+            
+            area.innerHTML = `
+                <div style="margin-bottom: 20px;">${sentenceHtml}</div>
+                <div id="mistake-input-area" class="mistake-input-area" ${globalProgress[q.id].solved ? 'style="display:flex;"' : ''}>
+                    <p style="font-size: 16px; margin-bottom: 10px; color: #9A3412;">Nhập từ đúng cho lỗi sai đã chọn:</p>
+                    <input type="text" id="ans-input" autocomplete="off" ${globalProgress[q.id].solved ? 'disabled value="'+q.ans[0]+'"' : ''}>
+                </div>
+            `;
+            if(globalProgress[q.id].solved) selectedMistakeWord = q.wrongWord;
+
+        } else if (q.type === 'type3') {
+            label.innerText = "Viết lại câu cùng nghĩa";
+            label.style.background = "#D1FAE5"; label.style.color = "#047857";
+            
+            area.innerHTML = `
+                <div class="rewrite-prompt">${q.prompt}</div>
+                <div class="rewrite-answer">
+                    <span class="rewrite-prefix">${q.prefix}</span>
+                    <input type="text" id="ans-input" autocomplete="off" ${globalProgress[q.id].solved ? 'disabled value="'+q.ans[0]+'"' : ''}>
+                </div>
+            `;
+            if(!globalProgress[q.id].solved) setTimeout(() => document.getElementById('ans-input').focus(), 100);
+        }
+
+        const input = document.getElementById('ans-input');
+        if(input) {
+            input.addEventListener('keypress', function(e) {
+                if(e.key === 'Enter' && !globalProgress[q.id].solved) checkAnswer();
+            });
+        }
+        updateProgressUI();
+    }
+
+    function selectMistake(elem, cleanWord) {
+        const q = currentTestQuestions[currentQIndex];
+        if (globalProgress[q.id].solved) return; 
+
+        document.querySelectorAll('.clickable-word').forEach(el => el.classList.remove('selected'));
+        elem.classList.add('selected');
+        selectedMistakeWord = cleanWord;
+        
+        document.getElementById('mistake-input-area').style.display = 'flex';
+        document.getElementById('ans-input').focus();
+    }
+
+    function normalizeString(str) {
+        return str.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+    }
+
+    function checkAnswer() {
+        const q = currentTestQuestions[currentQIndex];
+        if (globalProgress[q.id].solved) return;
+
+        let inputElem = document.getElementById('ans-input');
+        if(!inputElem) return;
+        let studentVal = inputElem.value.trim();
+        let isCorrect = false;
+        let errorMsg = "";
+
+        if (q.type === 'type1' || q.type === 'type3') {
+            if(!studentVal) { alert('Em chưa nhập câu trả lời kìa!'); return; }
+            let normStudent = normalizeString(studentVal);
+            isCorrect = q.ans.some(a => normalizeString(a) === normStudent);
+            if(!isCorrect) errorMsg = studentVal; 
+        } 
+        else if (q.type === 'type2') {
+            if(!selectedMistakeWord) { alert('Em hãy bấm vào từ bị sai trong câu đã nhé!'); return; }
+            if(!studentVal) { alert('Em chưa nhập từ sửa lại kìa!'); return; }
+            
+            if (selectedMistakeWord !== q.wrongWord) {
+                errorMsg = `Chọn sai lỗi: ${selectedMistakeWord}`;
+                isCorrect = false;
+            } else {
+                let normStudent = normalizeString(studentVal);
+                isCorrect = q.ans.some(a => normalizeString(a) === normStudent);
+                if(!isCorrect) errorMsg = `Sửa sai: ${studentVal}`;
+            }
+        }
+
+        globalProgress[q.id].attempts++;
+
+        if (isCorrect) {
+            globalProgress[q.id].solved = true;
+            showFeedback(true, "Chính xác! 🎉", "Làm tốt lắm!", q.expl);
+            renderCurrentQuestion(); 
+        } else {
+            globalProgress[q.id].lastWrongAnswer = errorMsg;
+            showFeedback(false, "Chưa chính xác 😅", "Cùng xem lại lý thuyết nhé!", q.expl);
+        }
+    }
+
+    function nextQuestion() {
+        let nextUnsolved = -1;
+        for(let i = currentQIndex + 1; i < currentTestQuestions.length; i++) {
+            if(!globalProgress[currentTestQuestions[i].id].solved) { nextUnsolved = i; break; }
+        }
+        if(nextUnsolved === -1) {
+            for(let i = 0; i < currentQIndex; i++) {
+                if(!globalProgress[currentTestQuestions[i].id].solved) { nextUnsolved = i; break; }
+            }
+        }
+        
+        if (nextUnsolved !== -1) {
+            currentQIndex = nextUnsolved;
+            renderCurrentQuestion();
+        }
+    }
+
+    // --- 5. FEEDBACK & REPORT ---
+    function showFeedback(isCorrect, title, msg, expl) {
+        const overlay = document.getElementById('feedback-overlay');
+        const box = document.getElementById('feedback-box');
+        
+        box.className = `feedback-box ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+        document.getElementById('fb-icon').innerHTML = isCorrect ? '<i class="fas fa-check-circle">✅</i>' : '<i class="fas fa-times-circle">❌</i>';
+        document.getElementById('fb-title').innerText = title;
+        document.getElementById('fb-message').innerText = msg;
+        document.getElementById('fb-explanation').innerHTML = `<strong>Giải thích:</strong> ${expl}`;
+        
+        const btn = document.getElementById('fb-btn');
+        if (isCorrect) {
+            btn.className = 'btn btn-success';
+            btn.innerText = 'Tiếp tục ➡';
+            btn.onclick = () => { overlay.classList.remove('active'); nextQuestion(); };
+        } else {
+            btn.className = 'btn btn-primary';
+            btn.innerText = 'Thử lại ↺';
+            btn.onclick = () => { overlay.classList.remove('active'); document.getElementById('ans-input').focus(); };
+        }
+        
+        overlay.classList.add('active');
+    }
+
+    function finishTest() {
+        buildReport(currentTestQuestions, `Báo Cáo Kết Quả - Test ${currentTestIndex + 1}`);
+    }
+
+    function showGlobalReport() {
+        buildReport(allQuestions, "Báo Cáo Tổng Hợp Toàn Bộ Các Bài");
+    }
+
+    function buildReport(questionsArray, title) {
+        document.getElementById('report-title').innerText = title;
+        
+        let perfect = 0;
+        let redo = 0;
+        let tbody = document.querySelector('#report-table tbody');
+        tbody.innerHTML = '';
+        
+        questionsArray.forEach(q => {
+            let p = globalProgress[q.id];
+            if(p.attempts === 0) return; 
+            
+            if(p.attempts === 1 && p.solved) perfect++;
+            else if(p.attempts > 1) redo++;
+            
+            if(p.attempts > 1 || (!p.solved && p.attempts > 0)) {
+                let tr = document.createElement('tr');
+                let qDesc = q.type === 'type1' ? q.text : (q.type === 'type2' ? q.text : q.prompt);
+                if(qDesc.length > 40) qDesc = qDesc.substring(0,40) + '...';
+                
+                tr.innerHTML = `
+                    <td><strong>Câu ${q.id}</strong><br><small style="color:#6B7280">${qDesc}</small></td>
+                    <td class="td-wrong">${p.lastWrongAnswer || '(Chưa rõ)'}</td>
+                    <td class="td-correct">${q.ans[0]}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+        
+        document.getElementById('stat-perfect').innerText = perfect;
+        document.getElementById('stat-redo').innerText = redo;
+        
+        if(tbody.innerHTML === '') {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Tuyệt vời! Không có câu nào em phải làm lại nhiều lần. 🎉</td></tr>';
+        }
+        
+        switchScreen('report-screen');
+    }
+
+</script>
+</body>
+</html>
+```eof
