@@ -7,111 +7,136 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4F46E5; --primary-dark: #4338CA;
-            --secondary: #10B981; --secondary-dark: #059669;
-            --danger: #EF4444; --danger-dark: #DC2626;
-            --warning: #F59E0B; --text-main: #1F2937;
-            --bg-gradient: linear-gradient(135deg, #E0E7FF 0%, #DBEAFE 100%);
+            --primary: #6366F1; /* Indigo */
+            --primary-dark: #4F46E5;
+            --secondary: #10B981; /* Emerald */
+            --secondary-dark: #059669;
+            --danger: #EF4444; 
+            --danger-dark: #DC2626;
+            --warning: #F59E0B; 
+            --text-main: #1F2937;
+            /* Modern playful gradient background */
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
             --card-bg: #FFFFFF;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
         body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* UI Components */
-        .screen { display: none; width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; flex-grow: 1; flex-direction: column; justify-content: center; }
-        .screen.active { display: flex; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Typography & Globals */
+        h1, h2, h3 { font-weight: 900; text-align: center; color: var(--primary-dark); margin-bottom: 20px; letter-spacing: -0.5px; }
+        p { font-size: 18px; line-height: 1.6; }
 
-        .card { background: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 3px solid #E5E7EB; }
-        h1, h2, h3 { font-weight: 800; text-align: center; color: var(--primary-dark); margin-bottom: 20px; }
+        /* UI Components */
+        .screen { display: none; width: 100%; max-width: 950px; margin: 0 auto; padding: 20px; flex-grow: 1; flex-direction: column; justify-content: center; }
+        .screen.active { display: flex; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); border-radius: 28px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 4px solid #F3F4F6; position: relative; overflow: hidden;}
         
-        .btn { padding: 12px 24px; border-radius: 16px; border: none; font-size: 18px; font-weight: 800; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
-        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
+        /* Cute illustration elements (CSS only) */
+        .card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: #FEF3C7; border-radius: 50%; z-index: 0; opacity: 0.5; }
+        .card > * { position: relative; z-index: 1; }
+
+        /* Buttons */
+        .btn { padding: 14px 28px; border-radius: 20px; border: none; font-size: 18px; font-weight: 800; cursor: pointer; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 6px 0 rgba(0,0,0,0.15); display: inline-flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn:active { transform: translateY(6px); box-shadow: 0 0 0 rgba(0,0,0,0.15); }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
         .btn-success { background: var(--secondary); color: white; }
+        .btn-success:hover { background: var(--secondary-dark); }
         
-        input[type="text"] { font-size: 18px; padding: 10px 15px; border: 3px solid #D1D5DB; border-radius: 12px; outline: none; transition: border-color 0.2s; font-weight: 700; color: var(--primary-dark); text-align: center; }
-        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); }
-        
+        /* Inputs */
+        input[type="text"] { font-size: 20px; padding: 12px 20px; border: 4px solid #E5E7EB; border-radius: 16px; outline: none; transition: all 0.3s ease; font-weight: 800; color: var(--primary-dark); text-align: center; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
+        input[type="text"]:focus { border-color: var(--primary); background: #EEF2FF; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 0 0 4px rgba(99, 102, 241, 0.2); }
+        input[disabled] { background: #F3F4F6; border-color: #D1D5DB; color: #10B981; }
+
         /* Login Screen */
         #login-screen { align-items: center; }
-        .login-box { text-align: center; max-width: 400px; width: 100%; }
-        .login-box input { width: 100%; margin-bottom: 20px; font-size: 20px; }
-        .login-box .btn { width: 100%; font-size: 20px; }
+        .login-box { text-align: center; max-width: 450px; width: 100%; }
+        .login-box input { margin-bottom: 25px; }
+        .login-box .btn { width: 100%; font-size: 22px; padding: 16px; }
 
         /* Test List Screen */
-        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
-        .test-card { background: white; border: 3px solid #E5E7EB; border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s; font-weight: 800; color: var(--text-main); }
-        .test-card:hover { transform: translateY(-5px); border-color: var(--primary); color: var(--primary); }
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; margin-top: 25px; }
+        .test-card { background: white; border: 4px solid #E5E7EB; border-radius: 20px; padding: 25px 15px; text-align: center; cursor: pointer; transition: all 0.2s ease; font-weight: 800; color: var(--text-main); position: relative;}
+        .test-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15); }
         .test-card.completed { border-color: var(--secondary); background: #ECFDF5; }
+        .test-card .test-num { font-size: 28px; color: var(--primary); margin-bottom: 5px; }
+        .test-card.completed .test-num { color: var(--secondary); }
+        .test-card .test-status { font-size: 14px; font-weight: 700; color: #6B7280; background: #F3F4F6; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 10px;}
+        .test-card.completed .test-status { background: #D1FAE5; color: #065F46; }
 
-        /* Quiz Screen */
-        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .progress-container { flex-grow: 1; margin: 0 20px; }
-        .progress-bar { background: #E5E7EB; height: 12px; border-radius: 6px; overflow: hidden; }
-        .progress-fill { background: var(--secondary); height: 100%; width: 0%; transition: width 0.3s ease; }
+        /* Quiz Screen - Header Nav */
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: white; padding: 15px 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 2px solid #F3F4F6;}
+        .progress-container { flex-grow: 1; margin: 0 25px; }
+        .progress-bar { background: #E5E7EB; height: 16px; border-radius: 8px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);}
+        .progress-fill { background: var(--secondary); height: 100%; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 8px;}
+        .nav-select { padding: 10px 15px; border-radius: 14px; border: 3px solid #E5E7EB; font-weight: 800; font-size: 16px; cursor: pointer; outline: none; background: white; color: var(--primary-dark); transition: border-color 0.2s;}
+        .nav-select:focus { border-color: var(--primary); }
         
-        .nav-select { padding: 8px 12px; border-radius: 10px; border: 2px solid #D1D5DB; font-weight: 700; font-size: 16px; cursor: pointer; outline: none; }
-        
-        .question-area { font-size: 24px; font-weight: 700; line-height: 1.6; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-bottom: 30px; }
+        /* Question Area */
+        .question-area { font-size: 26px; font-weight: 800; line-height: 1.7; min-height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-bottom: 35px; color: #1F2937;}
         
         /* Specific Question Types */
-        .q-type-label { display: inline-block; padding: 5px 12px; background: #FEF3C7; color: #D97706; border-radius: 20px; font-size: 14px; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
+        .q-type-label { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 20px; font-size: 15px; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
         
-        /* Nổi bật động từ trong ngoặc */
-        .verb-bracket { color: #D97706; font-weight: 900; background: #FEF3C7; padding: 4px 10px; border-radius: 10px; margin: 0 4px; display: inline-block; border: 2px dashed #FCD34D;}
-
-        /* Type 1: Fill */
-        .inline-input { display: inline-block; width: 150px; margin: 0 10px; }
+        /* TYPE 1: Fill - Nổi bật động từ */
+        .verb-bracket { color: #D97706; font-weight: 900; background: #FEF3C7; padding: 2px 12px; border-radius: 12px; margin: 0 6px; display: inline-block; border: 3px dashed #FCD34D; box-shadow: 0 2px 0 #FBBF24; font-size: 24px;}
+        .inline-input { display: inline-block; width: 180px; margin: 0 10px; font-size: 24px; padding: 8px 15px;}
         
-        /* Type 2: Mistake */
-        .clickable-word { display: inline-block; margin: 0 4px; padding: 2px 6px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
-        .clickable-word:hover { background: #F3F4F6; }
-        .clickable-word.selected { background: #FEE2E2; border-color: var(--danger); color: var(--danger-dark); }
-        .mistake-input-area { margin-top: 20px; display: none; flex-direction: column; align-items: center; background: #FFF7ED; padding: 15px; border-radius: 12px; border: 2px dashed #FDBA74; width: 100%; }
+        /* TYPE 2: Mistake */
+        .mistake-container { line-height: 2; padding: 20px; background: #F9FAFB; border-radius: 20px; border: 2px solid #E5E7EB; margin-bottom: 20px;}
+        .clickable-word { display: inline-block; margin: 2px 4px; padding: 4px 10px; border-radius: 10px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .clickable-word:hover { background: #FEF2F2; border-color: #FECACA; transform: translateY(-2px); }
+        .clickable-word.selected { background: #FEE2E2; border-color: var(--danger); color: var(--danger-dark); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); font-weight: 900;}
+        .mistake-input-area { display: none; flex-direction: column; align-items: center; background: #FFF7ED; padding: 20px; border-radius: 20px; border: 3px dashed #FDBA74; width: 100%; animation: slideUp 0.3s;}
         
-        /* Type 3: Rewrite */
-        .rewrite-prompt { font-size: 20px; color: #4B5563; margin-bottom: 15px; background: #F3F4F6; padding: 15px; border-radius: 12px; width: 100%; border-left: 5px solid var(--primary); }
-        .rewrite-answer { display: flex; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap; justify-content: center;}
-        .rewrite-prefix { font-weight: 800; color: var(--primary-dark); }
-        .rewrite-answer input { flex-grow: 1; min-width: 250px; text-align: left; }
+        /* TYPE 3: Rewrite */
+        .rewrite-prompt { font-size: 22px; color: #4B5563; margin-bottom: 20px; background: #EEF2FF; padding: 20px 25px; border-radius: 16px; width: 100%; border-left: 6px solid var(--primary); text-align: left;}
+        .rewrite-answer { display: flex; align-items: center; width: 100%; gap: 15px; flex-wrap: wrap; justify-content: flex-start; background: #F9FAFB; padding: 15px; border-radius: 16px; border: 2px solid #E5E7EB;}
+        .rewrite-prefix { font-weight: 900; color: var(--primary-dark); font-size: 22px; white-space: nowrap;}
+        .rewrite-answer input { flex-grow: 1; min-width: 200px; text-align: left; font-size: 22px;}
 
         /* Feedback Popup */
-        .feedback-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; }
-        .feedback-box { background: white; padding: 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .feedback-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .feedback-box { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 450px; width: 90%; transform: scale(0.9); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 25px 50px rgba(0,0,0,0.25);}
         .feedback-overlay.active { display: flex; }
-        .feedback-overlay.active .feedback-box { transform: scale(1); }
-        .feedback-icon { font-size: 60px; margin-bottom: 15px; }
+        .feedback-overlay.active .feedback-box { transform: scale(1); opacity: 1; }
+        .feedback-icon { font-size: 70px; margin-bottom: 20px; display: inline-block; animation: bounce 1s ease infinite;}
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .feedback-correct .feedback-icon { color: var(--secondary); }
-        .feedback-correct h3 { color: var(--secondary-dark); }
-        .feedback-wrong .feedback-icon { color: var(--danger); }
-        .feedback-wrong h3 { color: var(--danger-dark); }
-        .explanation { font-size: 16px; color: #4B5563; margin-bottom: 20px; background: #F3F4F6; padding: 10px; border-radius: 10px; font-weight: 600; }
+        .feedback-correct h3 { color: var(--secondary-dark); font-size: 28px;}
+        .feedback-wrong .feedback-icon { color: var(--danger); animation: shake 0.5s;}
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .feedback-wrong h3 { color: var(--danger-dark); font-size: 28px;}
+        .explanation { font-size: 17px; color: #4B5563; margin-bottom: 25px; background: #F3F4F6; padding: 15px; border-radius: 16px; font-weight: 700; text-align: left; border-left: 4px solid #9CA3AF;}
 
-        /* Action Buttons Area */
-        .action-area { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        /* Action Area */
+        .action-area { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
         
         /* Report Screen */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: #F9FAFB; padding: 20px; border-radius: 16px; text-align: center; border: 2px solid #E5E7EB; }
-        .stat-card h4 { color: #6B7280; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-card .num { font-size: 32px; font-weight: 900; color: var(--primary); }
-        .report-table-wrapper { overflow-x: auto; max-height: 400px; overflow-y: auto; border: 2px solid #E5E7EB; border-radius: 12px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 35px; }
+        .stat-card { background: white; padding: 25px; border-radius: 20px; text-align: center; border: 3px solid #E5E7EB; box-shadow: 0 10px 20px rgba(0,0,0,0.02);}
+        .stat-card h4 { color: #6B7280; font-size: 15px; text-transform: uppercase; margin-bottom: 10px; font-weight: 800; letter-spacing: 0.5px;}
+        .stat-card .num { font-size: 42px; font-weight: 900; }
+        .report-table-wrapper { overflow-x: auto; max-height: 450px; overflow-y: auto; border: 3px solid #E5E7EB; border-radius: 16px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);}
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid #E5E7EB; font-size: 15px; }
-        th { background: #F3F4F6; position: sticky; top: 0; font-weight: 800; color: #374151; }
-        tr:hover { background: #F9FAFB; }
-        .td-wrong { color: var(--danger); font-weight: 700; }
-        .td-correct { color: var(--secondary); font-weight: 700; }
+        th, td { padding: 16px 20px; border-bottom: 2px solid #E5E7EB; font-size: 16px; }
+        th { background: #F9FAFB; position: sticky; top: 0; font-weight: 900; color: #374151; z-index: 10; text-transform: uppercase; font-size: 14px;}
+        tr:hover { background: #EEF2FF; }
+        .td-wrong { color: var(--danger); font-weight: 800; background: #FEF2F2;}
+        .td-correct { color: var(--secondary); font-weight: 800; background: #ECFDF5;}
 
-        @media (max-width: 600px) {
-            .header-nav { flex-direction: column; gap: 10px; }
-            .progress-container { width: 100%; margin: 10px 0; }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-nav { flex-direction: column; gap: 15px; align-items: stretch; }
+            .progress-container { margin: 10px 0; }
             .stats-grid { grid-template-columns: 1fr; }
             .rewrite-answer { flex-direction: column; align-items: stretch; }
             .rewrite-prefix { text-align: center; }
+            .question-area { font-size: 22px; }
+            .inline-input { width: 140px; font-size: 20px; }
         }
     </style>
 </head>
@@ -120,31 +145,35 @@
     <!-- 1. LOGIN SCREEN -->
     <div id="login-screen" class="screen active">
         <div class="card login-box">
-            <h1>🚀 English Mastery</h1>
-            <p style="margin-bottom: 20px; font-weight: 600; color: #4B5563;">Nhập tên của em để bắt đầu hành trình nhé!</p>
-            <input type="text" id="student-name" placeholder="Ví dụ: Nguyễn Văn A" onkeypress="handleLoginEnter(event)">
-            <button class="btn btn-primary" onclick="startApp()">Bắt đầu ngay!</button>
+            <h1 style="font-size: 40px; margin-bottom: 10px;">🌟 English Pro</h1>
+            <p style="margin-bottom: 30px; font-weight: 700; color: #6B7280;">Hành trình chinh phục điểm 10 bắt đầu!</p>
+            <input type="text" id="student-name" placeholder="Nhập tên của em nhé..." onkeypress="handleLoginEnter(event)">
+            <button class="btn btn-primary" onclick="startApp()">Bắt đầu luyện tập 🚀</button>
         </div>
     </div>
 
     <!-- 2. TEST LIST SCREEN -->
     <div id="test-list-screen" class="screen">
-        <div class="card" style="text-align: center;">
-            <h2>👋 Xin chào, <span id="display-name" style="color: var(--primary);"></span>!</h2>
-            <p style="font-weight: 600; margin-bottom: 20px;">Chọn một bài kiểm tra để luyện tập. Mỗi bài có 20 câu hỏi.</p>
-            <div id="test-grid" class="test-grid"></div>
-            <button class="btn btn-success" style="margin-top: 30px;" onclick="showGlobalReport()">Báo Cáo Tổng Hợp</button>
+        <div class="card">
+            <h2 style="font-size: 32px;">👋 Chào <span id="display-name" style="color: var(--primary);"></span>!</h2>
+            <p style="font-weight: 700; text-align: center; color: #4B5563;">Hệ thống đã chuẩn bị sẵn 20 Tests. Em muốn thử sức bài nào?</p>
+            <div id="test-grid" class="test-grid">
+                <!-- Dynamically generated 20 buttons -->
+            </div>
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px dashed #E5E7EB;">
+                <button class="btn btn-primary" style="background: var(--text-main);" onclick="showGlobalReport()">📊 Xem Báo Cáo Tổng Hợp</button>
+            </div>
         </div>
     </div>
 
     <!-- 3. QUIZ SCREEN -->
     <div id="quiz-screen" class="screen">
         <div class="header-nav">
-            <button class="btn" style="padding: 8px 15px; font-size: 14px; background: #E5E7EB; color: #374151;" onclick="goToList()">⬅ Quay lại</button>
+            <button class="btn" style="padding: 10px 18px; font-size: 15px; background: #F3F4F6; color: #4B5563; box-shadow: none;" onclick="goToList()">⬅ Trở lại</button>
             <div class="progress-container">
-                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 900; margin-bottom: 8px; color: #4B5563;">
                     <span id="test-title">Test 1</span>
-                    <span id="progress-text">0/20 Đã xong</span>
+                    <span id="progress-text">0/20</span>
                 </div>
                 <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
             </div>
@@ -152,13 +181,13 @@
         </div>
 
         <div class="card">
-            <div id="q-type-label" class="q-type-label">Dạng bài</div>
+            <div style="text-align: center;"><div id="q-type-label" class="q-type-label">Dạng bài</div></div>
             <div id="question-render-area" class="question-area"></div>
             
             <div class="action-area">
-                <button id="btn-submit" class="btn btn-primary" onclick="checkAnswer()">Kiểm tra đáp án</button>
+                <button id="btn-submit" class="btn btn-primary" onclick="checkAnswer()">Kiểm tra đáp án 🔍</button>
                 <button id="btn-next" class="btn btn-success" style="display: none;" onclick="nextQuestion()">Câu tiếp theo ➡</button>
-                <button id="btn-finish" class="btn btn-warning" style="display: none; color: white;" onclick="finishTest()">Xem Báo Cáo Test</button>
+                <button id="btn-finish" class="btn btn-warning" style="display: none; color: white;" onclick="finishTest()">🏆 Xem Kết Quả Test</button>
             </div>
         </div>
     </div>
@@ -166,20 +195,20 @@
     <!-- 4. REPORT SCREEN -->
     <div id="report-screen" class="screen">
         <div class="card">
-            <h2 id="report-title">Báo Cáo Kết Quả</h2>
+            <h2 id="report-title" style="font-size: 30px;">Báo Cáo Kết Quả</h2>
             <div class="stats-grid">
                 <div class="stat-card"><h4>Làm đúng ngay lần 1</h4><div class="num" id="stat-perfect" style="color: var(--secondary)">0</div></div>
-                <div class="stat-card"><h4>Cần làm lại</h4><div class="num" id="stat-redo" style="color: var(--warning)">0</div></div>
+                <div class="stat-card"><h4>Câu cần ôn tập thêm</h4><div class="num" id="stat-redo" style="color: var(--danger)">0</div></div>
             </div>
-            <h3 style="font-size: 18px; text-align: left; margin-bottom: 10px;">Chi tiết các câu sai:</h3>
+            <h3 style="font-size: 20px; text-align: left; margin-bottom: 15px; color: #1F2937;">Chi tiết các câu làm sai:</h3>
             <div class="report-table-wrapper">
                 <table id="report-table">
-                    <thead><tr><th>ID</th><th>Lỗi sai cuối</th><th>Đáp án đúng</th></tr></thead>
+                    <thead><tr><th>Câu hỏi</th><th>Lỗi sai của em</th><th>Đáp án chuẩn</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
-            <div style="text-align: center; margin-top: 30px;">
-                <button class="btn btn-primary" onclick="goToList()">Về Danh Sách Bài</button>
+            <div style="text-align: center; margin-top: 35px;">
+                <button class="btn btn-primary" onclick="goToList()">⬅ Về Danh Sách Bài Test</button>
             </div>
         </div>
     </div>
@@ -189,16 +218,16 @@
         <div id="feedback-box" class="feedback-box">
             <div class="feedback-icon" id="fb-icon"></div>
             <h3 id="fb-title"></h3>
-            <p id="fb-message" style="font-weight: 700; margin-bottom: 10px;"></p>
+            <p id="fb-message" style="font-size: 20px; font-weight: 800; margin-bottom: 20px; color: #4B5563;"></p>
             <div class="explanation" id="fb-explanation"></div>
-            <button id="fb-btn" class="btn"></button>
+            <button id="fb-btn" class="btn" style="width: 100%;"></button>
         </div>
     </div>
 
 <script>
-    // --- 1. DATA COMPRESSION & PARSING LOGIC ---
+    // --- 1. DATA COMPRESSION & PARSING ---
     
-    // Type 1: [Sentence(blank denoted by [*]), Answer(s) separated by |, Explanation]
+    // Type 1: [Sentence, Answers, Explanation]
     const rawT1 = [
         "She (like) [*] studying P.E at school.|likes|'She' là ngôi thứ 3 số ít, động từ thêm 's'",
         "We like (sing) [*] at the party.|singing|to sing|Sau 'like' dùng V-ing hoặc to V",
@@ -284,7 +313,7 @@
         "Would you (like) [*] some noodles? - Yes, please.|like|Cấu trúc Would you like"
     ];
 
-    // Type 2: [Sentence | WrongWord | CorrectWord(s) | Explanation]
+    // Type 2: [Sentence | WrongPhrase | CorrectWord(s) | Explanation]
     const rawT2 = [
         "Phong usually watch games on T.V.|watch|watches|'Phong' là số ít, 'usually' chỉ HTĐ nên phải thêm 'es'.",
         "What the weather like in autumn?|What|What's|What is|Thiếu động từ to be 'is' (What's).",
@@ -345,7 +374,7 @@
         "Where are the pencil sharpener?|are|is|'pencil sharpener' số ít -> is."
     ];
 
-    // Type 3: [Prompt | Prefix | Answer(s) (will be lowercased and stripped of punctuation for checking) | Explanation]
+    // Type 3: [Prompt | Prefix | Answers]
     const rawT3 = [
         "Phong's school has forty classrooms.|There|are forty classrooms in phong's school|are 40 classrooms in phong's school|Cấu trúc: S + have/has + N = There is/are + N + in + N(chỉ nơi chốn).",
         "Phuong has a brother, Nam.|Phuong is|nam's sister|nams sister|Sở hữu cách.",
@@ -411,26 +440,32 @@
     let allQuestions = [];
     let idCounter = 1;
 
-    // Parse Type 1
+    // Parse data
     rawT1.forEach(item => {
         let parts = item.split('|');
-        let qText = parts[0];
-        let answers = parts.slice(1, parts.length - 1).map(s => s.trim().toLowerCase());
-        let expl = parts[parts.length - 1];
-        allQuestions.push({ id: idCounter++, type: 'type1', text: qText, ans: answers, expl: expl });
+        allQuestions.push({ id: idCounter++, type: 'type1', text: parts[0], ans: parts.slice(1, -1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
     });
-
-    // Parse Type 2
     rawT2.forEach(item => {
         let parts = item.split('|');
-        allQuestions.push({ id: idCounter++, type: 'type2', text: parts[0], wrongWord: parts[1], ans: parts.slice(2, parts.length - 1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
+        allQuestions.push({ id: idCounter++, type: 'type2', text: parts[0], wrongWord: parts[1], ans: parts.slice(2, -1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
     });
-
-    // Parse Type 3
     rawT3.forEach(item => {
         let parts = item.split('|');
-        allQuestions.push({ id: idCounter++, type: 'type3', prompt: parts[0], prefix: parts[1], ans: parts.slice(2, parts.length - 1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
+        allQuestions.push({ id: idCounter++, type: 'type3', prompt: parts[0], prefix: parts[1], ans: parts.slice(2, -1).map(s => s.trim().toLowerCase()), expl: parts[parts.length - 1] });
     });
+
+    // --- MỞ RỘNG DỮ LIỆU LÊN 20 TESTS (400 CÂU) ---
+    // Vì prompt không đính kèm text của Test 11-20, hệ thống tự động lặp lại dữ liệu cũ để tạo đủ cấu trúc 20 Tests.
+    // Thầy cô có thể thay thế mảng rawT1, rawT2, rawT3 bằng dữ liệu thật, hệ thống sẽ tự nhận diện.
+    const TARGET_TOTAL_QUESTIONS = 400; // 20 tests * 20
+    let originalLength = allQuestions.length;
+    let cloneIndex = 0;
+    while(allQuestions.length < TARGET_TOTAL_QUESTIONS) {
+        let cloneObj = JSON.parse(JSON.stringify(allQuestions[cloneIndex % originalLength]));
+        cloneObj.id = idCounter++;
+        allQuestions.push(cloneObj);
+        cloneIndex++;
+    }
 
     // --- 2. GLOBAL STATE ---
     const QUESTIONS_PER_TEST = 20;
@@ -477,9 +512,9 @@
             let div = document.createElement('div');
             div.className = `test-card ${isCompleted ? 'completed' : ''}`;
             div.innerHTML = `
-                <div style="font-size: 24px; margin-bottom: 5px;">Test ${i+1}</div>
-                <div style="font-size: 14px; font-weight: 600;">${solvedCount} / ${testQs.length} câu</div>
-                ${isCompleted ? '<div>✅ Hoàn thành</div>' : ''}
+                <div class="test-num">Test ${i+1}</div>
+                <div style="font-size: 16px; font-weight: 700; color: #4B5563;">${solvedCount} / ${testQs.length} câu</div>
+                <div class="test-status">${isCompleted ? '✅ Đã hoàn thành' : '⏳ Đang làm'}</div>
             `;
             div.onclick = () => loadTest(i);
             grid.appendChild(div);
@@ -495,7 +530,7 @@
         let firstUnsolved = currentTestQuestions.findIndex(q => !globalProgress[q.id].solved);
         currentQIndex = firstUnsolved !== -1 ? firstUnsolved : 0;
         
-        document.getElementById('test-title').innerText = `Test ${index + 1}`;
+        document.getElementById('test-title').innerText = `Bài tập - Test ${index + 1}`;
         populateQuestionDropdown();
         switchScreen('quiz-screen');
         renderCurrentQuestion();
@@ -508,7 +543,7 @@
             let isSolved = globalProgress[q.id].solved;
             let opt = document.createElement('option');
             opt.value = idx;
-            opt.text = `Câu ${idx + 1} ${isSolved ? '✅' : ''}`;
+            opt.text = `Câu ${idx + 1} ${isSolved ? ' ✅' : ''}`;
             select.appendChild(opt);
         });
         select.value = currentQIndex;
@@ -516,7 +551,7 @@
 
     function updateProgressUI() {
         let solvedCount = currentTestQuestions.filter(q => globalProgress[q.id].solved).length;
-        document.getElementById('progress-text').innerText = `${solvedCount}/${currentTestQuestions.length} Đã xong`;
+        document.getElementById('progress-text').innerText = `${solvedCount} / ${currentTestQuestions.length}`;
         document.getElementById('progress-fill').style.width = `${(solvedCount / currentTestQuestions.length) * 100}%`;
         
         populateQuestionDropdown();
@@ -525,14 +560,14 @@
         const q = currentTestQuestions[currentQIndex];
         const isSolved = globalProgress[q.id].solved;
         
-        document.getElementById('btn-submit').style.display = isSolved ? 'none' : 'block';
+        document.getElementById('btn-submit').style.display = isSolved ? 'none' : 'inline-flex';
         
         if (solvedCount === currentTestQuestions.length) {
             document.getElementById('btn-next').style.display = 'none';
-            document.getElementById('btn-finish').style.display = 'block';
+            document.getElementById('btn-finish').style.display = 'inline-flex';
         } else {
             document.getElementById('btn-finish').style.display = 'none';
-            document.getElementById('btn-next').style.display = isSolved ? 'block' : 'none';
+            document.getElementById('btn-next').style.display = isSolved ? 'inline-flex' : 'none';
         }
     }
 
@@ -557,43 +592,55 @@
         selectedMistakeWord = null;
 
         if (q.type === 'type1') {
-            label.innerText = "Chia động từ trong ngoặc";
-            label.style.background = "#DBEAFE"; label.style.color = "#1D4ED8";
+            label.innerHTML = "✏️ Chia động từ trong ngoặc";
+            label.style.background = "#E0E7FF"; label.style.color = "#3730A3";
             
-            // Xử lý làm nổi bật động từ trong ngoặc (verb)
-            // Thay thế (từ_bất_kỳ) thành <span class="verb-bracket">(từ_bất_kỳ)</span>
+            // Xử lý làm nổi bật động từ trong ngoặc: (từ) -> bôi đậm, màu cam
             let highlightedText = q.text.replace(/\(([^)]+)\)/g, '<span class="verb-bracket">($1)</span>');
-            
             let html = highlightedText.replace('[*]', `<input type="text" id="ans-input" class="inline-input" autocomplete="off" ${globalProgress[q.id].solved ? 'disabled value="'+q.ans[0]+'"' : ''}>`);
             
             area.innerHTML = html;
             if(!globalProgress[q.id].solved) setTimeout(() => document.getElementById('ans-input').focus(), 100);
 
         } else if (q.type === 'type2') {
-            label.innerText = "Tìm lỗi sai và sửa lại";
-            label.style.background = "#FEE2E2"; label.style.color = "#B91C1C";
+            label.innerHTML = "🕵️ Tìm lỗi sai và sửa lại";
+            label.style.background = "#FEE2E2"; label.style.color = "#991B1B";
             
-            let words = q.text.split(' ');
-            let sentenceHtml = words.map((w, idx) => {
-                let cleanW = w.replace(/[.,?]/g, ''); 
-                let isSolved = globalProgress[q.id].solved;
-                let isTarget = isSolved && cleanW === q.wrongWord; 
-                let classes = `clickable-word ${isTarget ? 'selected' : ''}`;
-                return `<span class="${classes}" onclick="selectMistake(this, '${cleanW}')" data-word="${cleanW}">${w}</span>`;
-            }).join('');
-            
+            // Nâng cấp Tokenizer cho Type 2 để bắt được nguyên CỤM TỪ sai (VD: "afternoon tomorrow")
+            let html = "";
+            let remainingText = q.text;
+            let wrongIdx = remainingText.indexOf(q.wrongWord);
+
+            if (wrongIdx !== -1 && !globalProgress[q.id].solved) {
+                let before = remainingText.substring(0, wrongIdx);
+                let after = remainingText.substring(wrongIdx + q.wrongWord.length);
+
+                before.split(/\s+/).forEach(w => {
+                    if(w) html += `<span class="clickable-word" onclick="selectMistake(this, '${w.replace(/[.,?]/g, '')}')">${w}</span> `;
+                });
+
+                html += `<span class="clickable-word" onclick="selectMistake(this, '${q.wrongWord}')">${q.wrongWord}</span> `;
+
+                after.split(/\s+/).forEach(w => {
+                    if(w) html += `<span class="clickable-word" onclick="selectMistake(this, '${w.replace(/[.,?]/g, '')}')">${w}</span> `;
+                });
+            } else if (globalProgress[q.id].solved) {
+                // Nếu đã giải quyết, hiển thị text tĩnh và highlight phần sai
+                html = q.text.replace(q.wrongWord, `<span class="clickable-word selected">${q.wrongWord}</span>`);
+                selectedMistakeWord = q.wrongWord;
+            }
+
             area.innerHTML = `
-                <div style="margin-bottom: 20px;">${sentenceHtml}</div>
+                <div class="mistake-container">${html}</div>
                 <div id="mistake-input-area" class="mistake-input-area" ${globalProgress[q.id].solved ? 'style="display:flex;"' : ''}>
-                    <p style="font-size: 16px; margin-bottom: 10px; color: #9A3412;">Nhập từ đúng cho lỗi sai đã chọn:</p>
+                    <p style="font-size: 18px; margin-bottom: 12px; color: #C2410C; font-weight: 800;">Nhập từ đúng cho lỗi sai đã chọn:</p>
                     <input type="text" id="ans-input" autocomplete="off" ${globalProgress[q.id].solved ? 'disabled value="'+q.ans[0]+'"' : ''}>
                 </div>
             `;
-            if(globalProgress[q.id].solved) selectedMistakeWord = q.wrongWord;
 
         } else if (q.type === 'type3') {
-            label.innerText = "Viết lại câu cùng nghĩa";
-            label.style.background = "#D1FAE5"; label.style.color = "#047857";
+            label.innerHTML = "✍️ Viết lại câu cùng nghĩa";
+            label.style.background = "#D1FAE5"; label.style.color = "#065F46";
             
             area.innerHTML = `
                 <div class="rewrite-prompt">${q.prompt}</div>
@@ -651,12 +698,12 @@
             if(!studentVal) { alert('Em chưa nhập từ sửa lại kìa!'); return; }
             
             if (selectedMistakeWord !== q.wrongWord) {
-                errorMsg = `Chọn sai lỗi: ${selectedMistakeWord}`;
+                errorMsg = `Chọn sai lỗi: "${selectedMistakeWord}"`;
                 isCorrect = false;
             } else {
                 let normStudent = normalizeString(studentVal);
                 isCorrect = q.ans.some(a => normalizeString(a) === normStudent);
-                if(!isCorrect) errorMsg = `Sửa sai: ${studentVal}`;
+                if(!isCorrect) errorMsg = `Sửa sai thành: "${studentVal}"`;
             }
         }
 
@@ -664,7 +711,7 @@
 
         if (isCorrect) {
             globalProgress[q.id].solved = true;
-            showFeedback(true, "Chính xác! 🎉", "Làm tốt lắm!", q.expl);
+            showFeedback(true, "Xuất sắc! 🎉", "Câu trả lời hoàn toàn chính xác!", q.expl);
             renderCurrentQuestion(); 
         } else {
             globalProgress[q.id].lastWrongAnswer = errorMsg;
@@ -695,7 +742,7 @@
         const box = document.getElementById('feedback-box');
         
         box.className = `feedback-box ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
-        document.getElementById('fb-icon').innerHTML = isCorrect ? '<i class="fas fa-check-circle">✅</i>' : '<i class="fas fa-times-circle">❌</i>';
+        document.getElementById('fb-icon').innerHTML = isCorrect ? '🌟' : '💡';
         document.getElementById('fb-title').innerText = title;
         document.getElementById('fb-message').innerText = msg;
         document.getElementById('fb-explanation').innerHTML = `<strong>Giải thích:</strong> ${expl}`;
@@ -703,11 +750,11 @@
         const btn = document.getElementById('fb-btn');
         if (isCorrect) {
             btn.className = 'btn btn-success';
-            btn.innerText = 'Tiếp tục ➡';
+            btn.innerHTML = 'Tiếp tục ➡';
             btn.onclick = () => { overlay.classList.remove('active'); nextQuestion(); };
         } else {
             btn.className = 'btn btn-primary';
-            btn.innerText = 'Thử lại ↺';
+            btn.innerHTML = 'Thử lại ↺';
             btn.onclick = () => { overlay.classList.remove('active'); document.getElementById('ans-input').focus(); };
         }
         
@@ -715,11 +762,11 @@
     }
 
     function finishTest() {
-        buildReport(currentTestQuestions, `Báo Cáo Kết Quả - Test ${currentTestIndex + 1}`);
+        buildReport(currentTestQuestions, `Kết Quả - Test ${currentTestIndex + 1}`);
     }
 
     function showGlobalReport() {
-        buildReport(allQuestions, "Báo Cáo Tổng Hợp Toàn Bộ Các Bài");
+        buildReport(allQuestions, "📊 Báo Cáo Tổng Hợp 20 Tests");
     }
 
     function buildReport(questionsArray, title) {
@@ -740,11 +787,11 @@
             if(p.attempts > 1 || (!p.solved && p.attempts > 0)) {
                 let tr = document.createElement('tr');
                 let qDesc = q.type === 'type1' ? q.text : (q.type === 'type2' ? q.text : q.prompt);
-                if(qDesc.length > 40) qDesc = qDesc.substring(0,40) + '...';
+                if(qDesc.length > 50) qDesc = qDesc.substring(0,50) + '...';
                 
                 tr.innerHTML = `
                     <td><strong>Câu ${q.id}</strong><br><small style="color:#6B7280">${qDesc}</small></td>
-                    <td class="td-wrong">${p.lastWrongAnswer || '(Chưa rõ)'}</td>
+                    <td class="td-wrong">${p.lastWrongAnswer || '(Chưa có)'}</td>
                     <td class="td-correct">${q.ans[0]}</td>
                 `;
                 tbody.appendChild(tr);
@@ -755,7 +802,9 @@
         document.getElementById('stat-redo').innerText = redo;
         
         if(tbody.innerHTML === '') {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Tuyệt vời! Không có câu nào em phải làm lại nhiều lần. 🎉</td></tr>';
+            let tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="3" style="text-align:center; padding: 30px; font-size: 18px;">Quá xuất sắc! Không có câu nào em phải làm lại nhiều lần. 🎉</td>';
+            tbody.appendChild(tr);
         }
         
         switchScreen('report-screen');
@@ -764,4 +813,3 @@
 </script>
 </body>
 </html>
-```eof
